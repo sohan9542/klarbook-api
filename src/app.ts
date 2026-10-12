@@ -4,7 +4,9 @@ import cors from "cors";
 import { pinoHttp } from "pino-http";
 import { logger } from "./lib/logger.js";
 import { prisma } from "./lib/prisma.js";
-
+import { authRouter } from "./modules/auth/auth.routes.js";
+import { errorHandler } from "./middleware/error-handler.js";
+import { notFound } from "./middleware/not-found.js";
 export const app = express();
 
 app.use(helmet());
@@ -20,3 +22,8 @@ app.get("/health", async (_req, res) => {
     res.status(503).json({ status: "error", db: "down" })
   }
 });
+
+
+app.use("/api/v1/auth", authRouter);
+app.use(notFound);
+app.use(errorHandler);
