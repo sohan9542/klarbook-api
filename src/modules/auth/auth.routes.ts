@@ -3,6 +3,9 @@ import { signupSchema } from "./auth.schema.js";
 import { signup } from "./auth.services.js";
 import { loginSchema, refreshSchema } from "./auth.schema.js";
 import { login, refresh, logout } from "./auth.services.js";
+import { authenticate } from "../../middleware/authenticate.js";
+import { getMe } from "./auth.services.js";
+
 
 export const authRouter = Router();
 
@@ -26,4 +29,8 @@ authRouter.post("/logout", async (req, res) => {
   const { refreshToken } = refreshSchema.parse(req.body);
   await logout(refreshToken);
   res.status(204).end();
+});
+
+authRouter.get("/me", authenticate, async (req, res) => {
+  res.json(await getMe(req.user!.id));
 });

@@ -79,3 +79,15 @@ export async function logout(token: string) {
     data: { revokedAt: new Date() },
   });
 }
+
+export async function getMe(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true, email: true, name: true,
+      memberships: { select: { role: true, tenant: { select: { id: true, name: true, slug: true } } } },
+    },
+  });
+  if (!user) throw new UnauthorizedError("User not found");
+  return user;
+}
