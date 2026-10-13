@@ -2,6 +2,8 @@ import { Router } from "express";
 import { authenticate } from "../../middleware/authenticate.js";
 import { requireRole } from "../../middleware/require-role.js";
 import { prisma } from "../../lib/prisma.js";
+import { addMemberSchema } from "./tenants.schema.js";
+import { addMember } from "./tenants.service.js";
 
 export const tenantsRouter = Router();
 
@@ -21,4 +23,15 @@ tenantsRouter.get("/:tenantId/members", authenticate, requireRole("OWNER", "ADMI
     select: { role: true, createdAt: true, user: { select: { id: true, email: true, name: true } } },
   });
   res.json(members);
+});
+
+
+tenantsRouter.post("/:tenantId/members", authenticate, requireRole("OWNER", "ADMIN"), async (req, res) => {
+  const input = addMemberSchema.parse(req.body);
+  const membership = await addMember(
+    req.membership!.tenantId,
+    { id: req.user!.id, role: req.membership!.role },
+    input,
+  );
+  res.status(201).json(membership);
 });
