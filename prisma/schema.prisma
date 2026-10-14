@@ -22,6 +22,7 @@ model Tenant {
   updatedAt   DateTime     @updatedAt
   memberships Membership[]
   auditLogs   AuditLog[]
+  clients Client[]
 }
 
 model User {
@@ -74,4 +75,18 @@ model RefreshToken {
   createdAt DateTime  @default(now())
 
   @@index([userId])
+}
+
+model Client {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  company   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([tenantId, createdAt])
 }
