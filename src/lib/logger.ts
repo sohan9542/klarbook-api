@@ -5,6 +5,6 @@ const isDev = env.NODE_ENV !== "production";
 
 
 export const logger = pino({
-  level: env.NODE_ENV === "production" ? "info" : "debug",
+  level: env.NODE_ENV === "test" ? "silent" : isDev ? "debug" : "info",
    ...(isDev && { transport: { target: "pino-pretty" } }),
 });
