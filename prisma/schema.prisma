@@ -25,6 +25,8 @@ model Tenant {
   clients Client[]
   projects Project[]
   documents   Document[]
+  invites Invite[]
+
 
 }
 
@@ -144,4 +146,29 @@ model Document {
   deletedAt   DateTime?
 
   @@index([tenantId, projectId])
+}
+
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+model Invite {
+  id          String       @id @default(uuid())
+  tenantId    String
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email       String
+  role        Role         // ADMIN | STAFF | CLIENT — never OWNER via invite
+  tokenHash   String       @unique
+  status      InviteStatus @default(PENDING)
+  invitedBy   String
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime     @default(now())
+
+  @@index([tenantId, email])
+  @@index([status])
 }

@@ -3,7 +3,7 @@ import { prisma } from "../src/lib/prisma.js";
 
 beforeEach(async () => {
   await prisma.$executeRawUnsafe(
-`TRUNCATE "AuditLog", "RefreshToken", "Document", "Project", "Client", "Membership", "User", "Tenant" RESTART IDENTITY CASCADE`
+`TRUNCATE "AuditLog", "RefreshToken", "Invite", "Document", "Project", "Client", "Membership", "User", "Tenant" RESTART IDENTITY CASCADE`
   );
 });
 
