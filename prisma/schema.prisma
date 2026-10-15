@@ -24,6 +24,8 @@ model Tenant {
   auditLogs   AuditLog[]
   clients Client[]
   projects Project[]
+  documents   Document[]
+
 }
 
 model User {
@@ -115,7 +117,31 @@ model Project {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
+  documents   Document[]
 
   @@index([tenantId, status])
   @@index([clientId])
+}
+
+enum DocumentStatus {
+  PENDING
+  READY
+}
+
+model Document {
+  id          String         @id @default(uuid())
+  tenantId    String
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId   String
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedBy  String
+  filename    String
+  contentType String
+  size        Int?
+  storageKey  String         @unique
+  status      DocumentStatus @default(PENDING)
+  createdAt   DateTime       @default(now())
+  deletedAt   DateTime?
+
+  @@index([tenantId, projectId])
 }
