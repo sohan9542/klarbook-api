@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { notFound } from "./middleware/not-found.js";
 import { tenantsRouter } from "./modules/tenants/tenants.routes.js";
 import { clientsRouter } from "./modules/clients/clients.routes.js";
+import { projectsRouter } from "./modules/projects/projects.routes.js";
 
 export const app = express();
 
@@ -30,6 +31,7 @@ app.get("/health", async (_req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/tenants", tenantsRouter);
 app.use("/api/v1/tenants/:tenantId/clients", clientsRouter);
+app.use("/api/v1/tenants/:tenantId/projects", projectsRouter);
 
 
 app.use(notFound);
