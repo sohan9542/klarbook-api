@@ -13,6 +13,7 @@ import { projectsRouter } from "./modules/projects/projects.routes.js";
 import { documentsRouter } from "./modules/document/documents.routes.js";
 import { invitesRouter, acceptInviteRouter } from "./modules/invites/invites.routes.js";
 import { gdprRouter } from "./modules/gdpr/gdpr.routes.js";
+import { authLimiter, apiLimiter } from "./middleware/rate-limit.js";
 
 export const app = express();
 
@@ -30,6 +31,10 @@ app.get("/health", async (_req, res) => {
   }
 });
 
+app.set("trust proxy", 1);
+app.use("/api/v1/auth/login", authLimiter);
+app.use("/api/v1/auth/signup", authLimiter);
+app.use("/api/v1", apiLimiter);
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/tenants", tenantsRouter);
