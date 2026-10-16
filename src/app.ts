@@ -12,6 +12,7 @@ import { clientsRouter } from "./modules/clients/clients.routes.js";
 import { projectsRouter } from "./modules/projects/projects.routes.js";
 import { documentsRouter } from "./modules/document/documents.routes.js";
 import { invitesRouter, acceptInviteRouter } from "./modules/invites/invites.routes.js";
+import { gdprRouter } from "./modules/gdpr/gdpr.routes.js";
 
 export const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/v1/tenants/:tenantId/projects", projectsRouter);
 app.use("/api/v1/tenants/:tenantId/projects/:projectId/documents", documentsRouter);
 app.use("/api/v1/tenants/:tenantId/invites", invitesRouter);
 app.use("/api/v1/invites", acceptInviteRouter);
+app.use("/api/v1/me", gdprRouter);
 
 app.use(notFound);
 app.use(errorHandler);
