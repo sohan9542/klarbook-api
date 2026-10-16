@@ -9,3 +9,8 @@ gdprRouter.get("/export", authenticate, async (req, res) => {
   res.setHeader("Content-Disposition", 'attachment; filename="klarbook-export.json"');
   res.json(data);
 });
+
+gdprRouter.delete("/", authenticate, async (req, res) => {
+    await service.eraseUser(req.user!.id);
+    res.status(204).send();
+  });
