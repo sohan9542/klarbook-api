@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma.js";
 import { NotFoundError } from "../../lib/errors.js";
 import type { CreateClientInput, UpdateClientInput } from "./clients.schema.js";
+import { withTenant } from "../../lib/tenant-db.js";
 
 const publicFields = {
   id: true, name: true, email: true, company: true, createdAt: true, updatedAt: true,
@@ -17,13 +18,15 @@ export async function createClient(tenantId: string, actorId: string, input: Cre
 }
 
 export async function listClients(tenantId: string, limit: number, cursor?: string) {
-  const items = await prisma.client.findMany({
-    where: { tenantId, deletedAt: null },
-    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    take: limit + 1,
-    ...(cursor && { cursor: { id: cursor }, skip: 1 }),
-    select: publicFields,
-  });
+  const items = await withTenant(tenantId, (tx) =>
+    tx.client.findMany({
+      where: { tenantId, deletedAt: null },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: limit + 1,
+      ...(cursor && { cursor: { id: cursor }, skip: 1 }),
+      select: publicFields,
+    }),
+  );
 
   const hasMore = items.length > limit;
   const data = hasMore ? items.slice(0, limit) : items;
