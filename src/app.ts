@@ -16,6 +16,9 @@ import { gdprRouter } from "./modules/gdpr/gdpr.routes.js";
 import { authLimiter, apiLimiter } from "./middleware/rate-limit.js";
 import { billingRouter } from "./modules/billing/billing.routes.js";
 import { stripeWebhook } from "./modules/billing/billing.webhook.js";
+import swaggerUi from "swagger-ui-express";
+import { openapiSpec } from "./docs/openapi.js";
+
 export const app = express();
 
 app.use(helmet());
@@ -37,6 +40,9 @@ app.get("/health", async (_req, res) => {
     res.status(503).json({ status: "error", db: "down" })
   }
 });
+
+app.get("/openapi.json", (_req, res) => res.json(openapiSpec));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiSpec));
 
 app.set("trust proxy", 1);
 app.use("/api/v1/auth/login", authLimiter);
