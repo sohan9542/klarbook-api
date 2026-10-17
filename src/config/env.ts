@@ -13,6 +13,10 @@ const envSchema = z.object({
   S3_ACCESS_KEY: z.string(),
   S3_SECRET_KEY: z.string(),
   REDIS_URL: z.url(),
+  STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
+  STRIPE_PRICE_ID: z.string().startsWith("price_"),
+  STRIPE_WEBHOOK_SECRET: z.string(),
+  APP_URL: z.url(),
 });
 
 const parsed = envSchema.safeParse(process.env);

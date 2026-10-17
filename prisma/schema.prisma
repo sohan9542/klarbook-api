@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Plan {
+  FREE
+  PRO
+}
+
 enum Role {
   OWNER
   ADMIN
@@ -26,7 +31,11 @@ model Tenant {
   projects Project[]
   documents   Document[]
   invites Invite[]
-
+  plan                 Plan      @default(FREE)
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  subscriptionStatus   String?
+  currentPeriodEnd     DateTime?
 
 }
 
@@ -172,3 +181,4 @@ model Invite {
   @@index([tenantId, email])
   @@index([status])
 }
+

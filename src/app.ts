@@ -14,13 +14,20 @@ import { documentsRouter } from "./modules/document/documents.routes.js";
 import { invitesRouter, acceptInviteRouter } from "./modules/invites/invites.routes.js";
 import { gdprRouter } from "./modules/gdpr/gdpr.routes.js";
 import { authLimiter, apiLimiter } from "./middleware/rate-limit.js";
-
+import { billingRouter } from "./modules/billing/billing.routes.js";
+import { stripeWebhook } from "./modules/billing/billing.webhook.js";
 export const app = express();
 
 app.use(helmet());
 app.use(cors());
-app.use(express.json());
 app.use(pinoHttp({ logger }));
+
+app.post(
+  "/api/v1/billing/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook,
+);
+app.use(express.json());
 
 app.get("/health", async (_req, res) => {
   try {
@@ -44,6 +51,7 @@ app.use("/api/v1/tenants/:tenantId/projects/:projectId/documents", documentsRout
 app.use("/api/v1/tenants/:tenantId/invites", invitesRouter);
 app.use("/api/v1/invites", acceptInviteRouter);
 app.use("/api/v1/me", gdprRouter);
+app.use("/api/v1/tenants/:tenantId/billing", billingRouter);
 
 app.use(notFound);
 app.use(errorHandler);
